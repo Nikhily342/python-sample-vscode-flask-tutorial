@@ -1,4 +1,27 @@
 trigger:
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $url = 'https://dev.azure.com/Nikhil0515/InsideIDOT%20Demo/_apis/wit/workitems/1?api-version=7.1-preview.3'
+      
+      $Token = 'pzmpnssamakyrcs4l6nq6zzlfhyewuprezopvvpfidhvrvshbega'
+      
+      $body = @(
+          @{
+              op = "add"
+              path = "/fields/System.Description"
+              value = "Unsuccessful"
+          }
+      )
+      
+      $AzureAuthHeader = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f "", $Token)))
+      
+      $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+      $headers.Add("Authorization", ("Basic {0}" -f $AzureAuthHeader))
+      $headers.Add("Content-Type", "application/json-patch+json")
+      
+      $response = Invoke-RestMethod -Uri $url -Method PATCH -Headers $headers -Body (ConvertTo-Json -InputObject $body)
 - main
 
 pool:
